@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 type Props = {
   format: number;
@@ -20,6 +20,39 @@ export default function WargameClient({
   const [teamA, setTeamA] = useState(initialTeamA);
   const [teamB, setTeamB] = useState(initialTeamB);
   const [myTeam, setMyTeam] = useState<"A" | "B" | null>(null);
+  const [timeLeft, setTimeLeft] = useState("");
+
+  // 🎯 Countdown logic
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const now = new Date();
+
+      const [hours, minutes] = startTime.split(":").map(Number);
+      const start = new Date();
+      start.setHours(hours);
+      start.setMinutes(minutes);
+      start.setSeconds(0);
+
+      const diff = start.getTime() - now.getTime();
+
+      if (diff <= 0) {
+        setTimeLeft("La Wargame est en cours");
+        return;
+      }
+
+      const h = Math.floor(diff / (1000 * 60 * 60));
+      const m = Math.floor((diff / (1000 * 60)) % 60);
+      const s = Math.floor((diff / 1000) % 60);
+
+      setTimeLeft(
+        `Début dans : ${h.toString().padStart(2, "0")}h ${m
+          .toString()
+          .padStart(2, "0")}m ${s.toString().padStart(2, "0")}s`
+      );
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [startTime]);
 
   const joinTeamA = () => {
     if (teamA >= max || myTeam) return;
@@ -38,6 +71,8 @@ export default function WargameClient({
       <h1 className="text-3xl font-bold">
         Wargame {format}v{format} — {startTime}
       </h1>
+
+      <div className="text-yellow-400 font-semibold">{timeLeft}</div>
 
       {myTeam && (
         <div className="bg-green-900 p-4 rounded-lg">
