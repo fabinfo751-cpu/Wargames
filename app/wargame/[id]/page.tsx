@@ -18,13 +18,5 @@ export default async function WargamePage({
     );
   }
 
-  return (
-    <WargameClient
-      format={game.format}
-      startTime={game.startTime}
-      initialTeamA={game.teamA}
-      initialTeamB={game.teamB}
-      max={game.max}
-    />
-  );
+  return <WargameClient game={game} />;
 }
